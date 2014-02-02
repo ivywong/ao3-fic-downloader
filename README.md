@@ -1,5 +1,4 @@
-ao3-downloader
-==============
+### ao3-downloader
 
 A tool to help download all the fics in a series easily. Currently work in progress.
 
