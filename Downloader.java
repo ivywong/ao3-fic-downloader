@@ -220,6 +220,7 @@ public class Downloader extends JFrame implements ActionListener{
             ficInfo += ("Series Title: " + title + "\n");
             info.setText(ficInfo);
             if(links.size() > 1){
+                title = title.replaceAll("[^a-zA-Z0-9. -]","");
                 dest += (title + "/");
                 System.out.println("Destination: " + dest);
                 numberFics = true;
