@@ -16,7 +16,7 @@ public class Downloader extends JFrame implements ActionListener{
     private static Downloader d;
     private JFileChooser chooser;
     private JTextField url, destination;
-    private JButton browse, check, download, cancel;
+    private JButton browse, check, download, exit;
     private JLabel status, info;
     private Container bg;
     private JList<String> formats;
@@ -45,7 +45,7 @@ public class Downloader extends JFrame implements ActionListener{
         download = new JButton("Download");
         browse = new JButton("Browse...");
         check = new JButton("Check");
-        cancel = new JButton("Cancel");
+        exit = new JButton("Exit");
         status = new JLabel();
         info = new JLabel();
         formats = new JList<String>(new String[] {"mobi","epub","pdf","html"});
@@ -70,7 +70,7 @@ public class Downloader extends JFrame implements ActionListener{
         download.addActionListener(this);
         browse.addActionListener(this);
         check.addActionListener(this);
-        cancel.addActionListener(this);
+        exit.addActionListener(this);
         chooser.addActionListener(this);
 
         bg.setLayout(new FlowLayout());
@@ -78,15 +78,15 @@ public class Downloader extends JFrame implements ActionListener{
         bg.add(url);
         bg.add(new JLabel("Destination:"));
         bg.add(destination);
- 
+
         bg.add(browse);
-        
+
         bg.add(new JLabel("Format:"));
         bg.add(formats);
 
         bg.add(check);
         bg.add(download);
-        bg.add(cancel);
+        bg.add(exit);
 
         bg.add(status);
         bg.add(info);
@@ -130,25 +130,37 @@ public class Downloader extends JFrame implements ActionListener{
 
             if(inputValid()){
                 status.setText("");
-                getSeriesInfo();
+                if(isSeries()){
+                    getSeriesInfo();
+                } else {
+                    getFicInfo(src);
+                }
             }
         } else if(command.equals("Download")){
             src = url.getText();
-            dest = destination.getText();
+            dest = destination.getText() + "/";
             format = formats.getSelectedValue();
-            //status.setText("<html>Downloading fic from " + src + "<br>" + "Destination: " + dest + "</html>");
+            status.setText("<html>Downloading fic from " + src + "<br>" + "Destination: " + dest + "</html>");
             if(inputValid()){
                 status.setText("");
-                getSeriesInfo();
-                downloadSeries();
+                if(isSeries()){
+                    getSeriesInfo();
+                    downloadSeries();
+                } else {
+                    downloadFic(src);
+                }
             }
-        } else if(command.equals("Cancel")){
+        } else if(command.equals("Exit")){
             Downloader.getInstance().close();
         }
     }
 
+    public boolean isSeries(){
+        return src.contains("series");
+    }
+
     //HTML handling
-    
+
     public boolean inputValid(){
         String stat = "<html>";
         if(format != null && !dest.equals("") && (src.contains("ao3.org") || src.contains("archiveofourown.org"))){
@@ -178,10 +190,23 @@ public class Downloader extends JFrame implements ActionListener{
             info.setText(ficInfo);
             //info.setText("<html>Downloading...</html>");
             System.out.println(ficInfo);
-            
+
         } catch (IOException e){
             e.printStackTrace();
         }
+    }
+
+    public void getFicInfo(String link){
+       try {
+            Document fic = Jsoup.connect(link+"?view_adult=true").get();
+            String title = fic.select("h2.heading").first().text();
+            String author = fic.select("a.author").first().text();
+            info.setText(String.format("<html>Fic Title: %s<br>Author: %s</html>",title,author));
+            System.out.println(String.format("Title: %s\nAuthor: %s",title,author));
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+ 
     }
 
     //Download series of fics with url.
@@ -195,7 +220,7 @@ public class Downloader extends JFrame implements ActionListener{
             ficInfo += ("Series Title: " + title + "\n");
             info.setText(ficInfo);
             if(links.size() > 1){
-                dest += ("\\" + title + "\\");
+                dest += (title + "/");
                 System.out.println("Destination: " + dest);
                 numberFics = true;
             }
@@ -208,7 +233,7 @@ public class Downloader extends JFrame implements ActionListener{
 
             System.out.println("Processed.");
             counter = 0;
- 
+
         } catch (IOException e){
             e.printStackTrace();
         }
@@ -231,8 +256,9 @@ public class Downloader extends JFrame implements ActionListener{
             }
             filename = filename.replaceAll("[^a-zA-Z0-9. -]","");
             //System.out.println(filename);
+            System.out.println("Downloading " + filename + "...");
             FileUtils.copyURLToFile(new URL(dl), new File(dest + filename), 15000, 30000); 
-            System.out.println("Downloading " + filename);
+            System.out.println("Downloaded.\n");
 
         } catch (IOException e){
             e.printStackTrace();
