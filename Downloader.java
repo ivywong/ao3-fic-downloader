@@ -19,8 +19,9 @@ public class Downloader extends JFrame implements ActionListener{
     private JButton browse, check, download, cancel;
     private JLabel status, info;
     private Container bg;
+    private JList<String> formats;
 
-    private String src, dest;
+    private String src, dest, format;
     private int counter;
     private boolean numberFics;
 
@@ -39,17 +40,19 @@ public class Downloader extends JFrame implements ActionListener{
         chooser = new JFileChooser(new File(System.getProperty("user.dir")));
         //TESTING DIRECTORY
         //chooser = new JFileChooser(new File("C:\\Users\\home\\Dropbox\\Fanfics\\Testing"));
-        url = new JTextField("http://", 45);
-        destination = new JTextField("", 40);
+        url = new JTextField("http://", 48);
+        destination = new JTextField("", 35);
         download = new JButton("Download");
         browse = new JButton("Browse...");
         check = new JButton("Check");
         cancel = new JButton("Cancel");
         status = new JLabel();
         info = new JLabel();
+        formats = new JList<String>(new String[] {"mobi","epub","pdf","html"});
 
         src = "";
         dest = "";
+        format = "";
         numberFics = false;
 
 
@@ -75,10 +78,16 @@ public class Downloader extends JFrame implements ActionListener{
         bg.add(url);
         bg.add(new JLabel("Destination:"));
         bg.add(destination);
+ 
         bg.add(browse);
+        
+        bg.add(new JLabel("Format:"));
+        bg.add(formats);
+
         bg.add(check);
         bg.add(download);
         bg.add(cancel);
+
         bg.add(status);
         bg.add(info);
 
@@ -117,6 +126,8 @@ public class Downloader extends JFrame implements ActionListener{
         } else if(command.equals("Check")){
             src = url.getText();
             dest = destination.getText();
+            format = formats.getSelectedValue();
+
             if(inputValid()){
                 status.setText("");
                 getSeriesInfo();
@@ -124,6 +135,7 @@ public class Downloader extends JFrame implements ActionListener{
         } else if(command.equals("Download")){
             src = url.getText();
             dest = destination.getText();
+            format = formats.getSelectedValue();
             //status.setText("<html>Downloading fic from " + src + "<br>" + "Destination: " + dest + "</html>");
             if(inputValid()){
                 status.setText("");
@@ -139,12 +151,14 @@ public class Downloader extends JFrame implements ActionListener{
     
     public boolean inputValid(){
         String stat = "<html>";
-        if(!dest.equals("") && (src.contains("ao3.org") || src.contains("archiveofourown.org"))){
-            System.out.println("Destination is valid.");
+        if(format != null && !dest.equals("") && (src.contains("ao3.org") || src.contains("archiveofourown.org"))){
+            //System.out.println("Destination is valid.");
             return true;
         } else if (dest.equals("")){
-            System.out.println("Destination invalid");
+            //System.out.println("Destination invalid");
             stat += "Please enter a valid destination.<br>";
+        } else if(format == null) {
+            stat += "Please choose a format.<br>";
         } else {
             stat += "Please enter a valid URL.<br>";
         }
@@ -204,7 +218,7 @@ public class Downloader extends JFrame implements ActionListener{
     // Download single fic with url.
     public void downloadFic(String link){
         String ficInfo = "";
-        String format = "epub";
+        //String format = "epub";
         try {
             Document fic = Jsoup.connect(link+"?view_adult=true").get();
             String title = fic.select("h2.heading").first().text();
@@ -215,6 +229,7 @@ public class Downloader extends JFrame implements ActionListener{
             if(numberFics){
                 filename = String.format("%03d-%s",counter,filename);
             }
+            filename = filename.replaceAll("[^a-zA-Z0-9. -]","");
             //System.out.println(filename);
             FileUtils.copyURLToFile(new URL(dl), new File(dest + filename), 15000, 30000); 
             System.out.println("Downloading " + filename);
