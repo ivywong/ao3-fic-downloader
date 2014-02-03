@@ -10,13 +10,8 @@ import org.apache.commons.io.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.System.*;
 
 public class Downloader extends JFrame implements ActionListener{
-
-    /*
-    */
-
 
     private static Downloader d;
     private JFileChooser chooser;
@@ -41,11 +36,11 @@ public class Downloader extends JFrame implements ActionListener{
 
     public void init(){
         bg = this.getContentPane();
-        //chooser = new JFileChooser(new File(System.getProperty("user.dir")));
+        chooser = new JFileChooser(new File(System.getProperty("user.dir")));
         //TESTING DIRECTORY
-        chooser = new JFileChooser(new File("C:\\Users\\home\\Dropbox\\Fanfics\\Testing"));
-        url = new JTextField("http://archiveofourown.org/series/14493", 45);
-        destination = new JTextField("C:\\Users\\home\\Dropbox\\Fanfics\\Testing", 40);
+        //chooser = new JFileChooser(new File("C:\\Users\\home\\Dropbox\\Fanfics\\Testing"));
+        url = new JTextField("http://", 45);
+        destination = new JTextField("", 40);
         download = new JButton("Download");
         browse = new JButton("Browse...");
         check = new JButton("Check");
@@ -121,22 +116,41 @@ public class Downloader extends JFrame implements ActionListener{
             }
         } else if(command.equals("Check")){
             src = url.getText();
-            getSeriesInfo();
+            dest = destination.getText();
+            if(inputValid()){
+                status.setText("");
+                getSeriesInfo();
+            }
         } else if(command.equals("Download")){
             src = url.getText();
             dest = destination.getText();
-            //check if URL string is valid
-            //then do HTML parsing stuff
-            //download every work in series
             //status.setText("<html>Downloading fic from " + src + "<br>" + "Destination: " + dest + "</html>");
-            getSeriesInfo();
-            downloadSeries();
+            if(inputValid()){
+                status.setText("");
+                getSeriesInfo();
+                downloadSeries();
+            }
         } else if(command.equals("Cancel")){
             Downloader.getInstance().close();
         }
     }
 
     //HTML handling
+    
+    public boolean inputValid(){
+        String stat = "<html>";
+        if(!dest.equals("") && (src.contains("ao3.org") || src.contains("archiveofourown.org"))){
+            System.out.println("Destination is valid.");
+            return true;
+        } else if (dest.equals("")){
+            System.out.println("Destination invalid");
+            stat += "Please enter a valid destination.<br>";
+        } else {
+            stat += "Please enter a valid URL.<br>";
+        }
+        status.setText(stat + "</html>");
+        return false;
+    }
 
     // Get information about series.
     public void getSeriesInfo(){
