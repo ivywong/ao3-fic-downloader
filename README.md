@@ -3,17 +3,10 @@
 A tool to help download all the fics in a series easily. Currently work in progress.
 
 #### Usage
-Download or clone the files, and then cd to that directory.
-Then type in the terminal or command line:
-`run.bat`
+Download or clone the files.
 
-May make a .jar file eventually.
+On Windows: 
+run `run.bat`.
 
-Status:
-- Currently works with series urls.
-- GUI doesn't look very nice.
-
-To Do:
-- Add single fic downloads.
-- Reorganize code.
-- Clean up GUI.
+On other OS's (or Cygwin, etc):
+run `run-x`.
