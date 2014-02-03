@@ -2,10 +2,10 @@
 
 A tool to help download all the fics in a series easily. Currently work in progress.
 
-# Usage
+#### Usage
 Download or clone the files, and then cd to that directory.
 Then type in the terminal or command line:
-run.bat
+`run.bat`
 
 May make a .jar file eventually.
 
