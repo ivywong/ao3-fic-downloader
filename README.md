@@ -2,5 +2,11 @@
 
 A tool to help download all the fics in a series easily. Currently work in progress.
 
-For use on www.ao3.org.
+Status:
+- Currently works with series urls.
+- GUI doesn't look very nice.
 
+To Do:
+- Add single fic downloads.
+- Reorganize code.
+- Clean up GUI.
