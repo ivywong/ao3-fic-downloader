@@ -8,8 +8,8 @@ Download or clone the files.
 On Windows: 
 run `run.bat`.
 
-On other OS's (or Cygwin, etc):
-run `run-x`.
+On other OS's (OSX, Linux, etc):
+run `run.sh`.
 
 Use "http://archiveofourown.org/series/..." if you want to download a series, or "http://archiveofourown.org/works/..." if you want to download a single fic. 
 
